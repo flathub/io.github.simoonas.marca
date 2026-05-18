@@ -11,7 +11,6 @@
         "--socket=fallback-x11",
         "--socket=wayland",
         "--device=dri",
-        "--env=RUST_BACKTRACE=1",
         "--env=GSETTINGS_SCHEMA_DIR=/app/share/glib-2.0/schemas",
         "--share=network"
     ],
@@ -48,7 +47,8 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/simoonas/Marca.git",
-                    "tag": "v0.1.0"
+                    "tag": "v0.1.0",
+                    "commit": "955e2b54d681b118bcac86bb239b6aaafbcc01b1"
                 },
                 "cargo-sources.json"
             ]
