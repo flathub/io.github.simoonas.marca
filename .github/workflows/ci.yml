@@ -1,0 +1,37 @@
+name: Update manifest and cargo-sources
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # Check upstream and update manifest if a new tag exists
+      - name: Run Checker
+        uses: docker://ghcr.io/flathub/flatpak-external-data-checker:latest
+        with:
+          args: --update io.github.simoonas.marca.json
+
+      # If update happened, checker leaves behind the upstream in clone/
+      - name: Regenerate Cargo Sources
+        run: |
+          if [ -d "clone/io.github.simoonas.marca" ]; then
+            curl -O https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/master/cargo/flatpak-cargo-generator.py
+            python3 flatpak-cargo-generator.py clone/io.github.simoonas.marca/Cargo.lock -o cargo-sources.json
+          fi
+
+      # Automatically detects modified files, commits them, opens PR
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Update tag, commit and cargo-sources.json"
+          title: "Update upstream release"
+          branch: pr/update-manifest
+          delete-branch: true
