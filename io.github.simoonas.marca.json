@@ -40,7 +40,7 @@
                     "type" : "git",
                     "url" : "https://github.com/simoonas/Marca.git",
                     "tag": "v0.1.0",
-                    "commit": "3f45524a4ef1ccb1e42972b27a2f1491351074ec",
+                    "commit": "83cd8d0dd5f036d27638deab2f073762ea23b8c8",
                     "x-checker-data": {
                       "type": "git",
                       "tag-pattern": "^v([\d.]+)$"
