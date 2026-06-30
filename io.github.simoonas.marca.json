@@ -43,7 +43,7 @@
                     "commit": "83cd8d0dd5f036d27638deab2f073762ea23b8c8",
                     "x-checker-data": {
                       "type": "git",
-                      "tag-pattern": "^v([\d.]+)$"
+                      "tag-pattern": "^v([\\d.]+)$"
                   }
                 },
                 "cargo-sources.json"
