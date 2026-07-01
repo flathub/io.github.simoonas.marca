@@ -13,6 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Configure Git
+        run: |
+          git config --global --add safe.directory /github/workspace
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       # Check upstream and update manifest if a new tag exists
       - name: Run Checker
         uses: docker://ghcr.io/flathub/flatpak-external-data-checker:latest
