@@ -14,13 +14,13 @@
         "--device=dri",
         "--share=network"
     ],
-    "modules" : [
+    "modules": [
         {
-            "name" : "marca",
-            "buildsystem" : "simple",
-            "build-options" : {
-                "append-path" : "/usr/lib/sdk/rust-stable/bin",
-                "env" : {
+            "name": "marca",
+            "buildsystem": "simple",
+            "build-options": {
+                "append-path": "/usr/lib/sdk/rust-stable/bin",
+                "env": {
                     "CARGO_HOME": "/run/build/marca/cargo"
                 }
             },
@@ -35,16 +35,16 @@
                 "glib-compile-schemas ${FLATPAK_DEST}/share/glib-2.0/schemas/",
                 "install -Dm0644 data/io.github.simoonas.marca.metainfo.xml ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml"
             ],
-            "sources" : [
+            "sources": [
                 {
-                    "type" : "git",
-                    "url" : "https://github.com/simoonas/Marca.git",
-                    "tag": "v0.1.0",
-                    "commit": "83cd8d0dd5f036d27638deab2f073762ea23b8c8",
+                    "type": "git",
+                    "url": "https://github.com/simoonas/Marca.git",
+                    "tag": "v0.1.1",
+                    "commit": "2549e6bfd58489e680c9f9bf0d64568bbfc5e707",
                     "x-checker-data": {
-                      "type": "git",
-                      "tag-pattern": "^v([\\d.]+)$"
-                  }
+                        "type": "git",
+                        "tag-pattern": "^v([\\d.]+)$"
+                    }
                 },
                 "cargo-sources.json"
             ]
