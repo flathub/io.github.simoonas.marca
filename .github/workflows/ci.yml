@@ -26,7 +26,7 @@ jobs:
           GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: --update io.github.simoonas.marca.json
+          args: --update --commit-only --never-fork io.github.simoonas.marca.json
 
       # If update happened, checker leaves behind the upstream in clone/
       - name: Regenerate Cargo Sources
