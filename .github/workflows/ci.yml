@@ -1,48 +1,37 @@
-name: Update manifest and cargo-sources
-on:
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+name: Update Cargo sources
+
+on: [pull_request]
 
 jobs:
-  update:
+  update-sources:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    #if: github.actor == 'flathubbot'
     steps:
       - uses: actions/checkout@v4
-
-      - name: Fix directory permissions
-        run: sudo chown -R $USER:$USER .
-        
-      # Check upstream and update manifest if a new tag exists
-      - name: Run Checker
-        uses: docker://ghcr.io/flathub/flatpak-external-data-checker:latest
-        env:
-          GIT_AUTHOR_NAME: github-actions[bot]
-          GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
-          GIT_COMMITTER_NAME: github-actions[bot]
-          GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: --update --commit-only --never-fork io.github.simoonas.marca.json
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
 
-      # If update happened, checker leaves behind the upstream in clone/
-      - name: Regenerate Cargo Sources
+      - name: Retrieve tag from manifest
+        id: manifestTagVersion
         run: |
-          if [ -d "clone/io.github.simoonas.marca" ]; then
-            curl -O https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/master/cargo/flatpak-cargo-generator.py
-            python3 flatpak-cargo-generator.py clone/io.github.simoonas.marca/Cargo.lock -o cargo-sources.json
-          fi
+          echo "TAG_VERSION=$(jq -r '.modules[0].sources[0].tag' io.github.simoonas.marca.json)" >> $GITHUB_OUTPUT
 
-      # Detect modified files, commit them, open PR
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+      - uses: actions/checkout@v4
         with:
-          base: master
-          branch: pr/update-manifest
-          push-to-fork: false
-          commit-message: "Update version and cargo-sources.json"
-          title: "Update upstream release"
-          delete-branch: true
+          path: marca
+          repository: simoonas/Marca
+          ref: ${{ steps.manifestTagVersion.outputs.TAG_VERSION }}
+
+      - name: Update cargo-sources.json
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y python3-aiohttp python3-tomlkit
+          curl -O https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/master/cargo/flatpak-cargo-generator.py
+          python3 flatpak-cargo-generator.py marca/Cargo.lock -o cargo-sources.json 
+          rm -rf marca
+          [[ ! $(git status --porcelain) ]] && exit 0
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add cargo-sources.json
+          git commit -m 'Update cargo-sources.json'
+          git push
